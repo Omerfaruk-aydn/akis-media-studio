@@ -30,7 +30,7 @@ import {
   Zap,
 } from 'lucide-react';
 
-const HISTORY_KEY = 'akis.history.v1';
+export const HISTORY_KEY = 'akis.history.v2';
 const HISTORY_LIMIT = 30;
 const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, ''); // backend base URL injected at build time
 
@@ -106,6 +106,18 @@ function safeSameOriginUrl(value) {
     const apiBase = (API_BASE || '').replace(/\/$/, '');
     if (apiBase && parsed.origin === apiBase) return parsed.href;
     return null;
+  } catch {
+    return null;
+  }
+}
+
+function safeDownloadUrl(value) {
+  if (typeof value !== 'string' || !value) return null;
+  try {
+    const parsed = new URL(value, window.location.origin);
+    if (!['http:', 'https:'].includes(parsed.protocol)) return null;
+    if (parsed.protocol === 'https:' && parsed.hostname === 'localhost') return null;
+    return parsed.href;
   } catch {
     return null;
   }
@@ -339,7 +351,7 @@ export default function App() {
       platform: context?.platform || platform,
       url: context?.url || '',
       format: context?.format || '',
-      downloadUrl: safeSameOriginUrl(job.downloadUrl),
+      downloadUrl: job.downloadUrl,
       filename: job.filename,
       date: new Date().toISOString(),
     };
@@ -497,7 +509,7 @@ export default function App() {
   function historyRows(entries, removable) {
     return entries.map((entry) => {
       const Icon = PLATFORMS.find((platformEntry) => platformEntry.id === entry.platform)?.icon || Film;
-      const file = safeSameOriginUrl(entry.downloadUrl);
+      const file = safeDownloadUrl(entry.downloadUrl);
       const validDate = !Number.isNaN(Date.parse(entry.date));
       return (
         <li className="history-row" key={entry.id}>
@@ -542,7 +554,7 @@ export default function App() {
     });
   }
 
-  const jobFileUrl = job?.status === 'completed' ? safeSameOriginUrl(job.downloadUrl) : null;
+  const jobFileUrl = job?.status === 'completed' ? safeDownloadUrl(job.downloadUrl) : null;
   const currentStep = !media ? 1 : !job ? 2 : 3;
 
   return (
