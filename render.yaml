@@ -2,7 +2,7 @@ services:
   - type: web
     name: akis-media-studio
     runtime: docker
-    plan: starter
+    plan: free
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
