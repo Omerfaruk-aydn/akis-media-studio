@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: akis-media-studio
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: ALLOWED_ORIGINS
+        sync: false
+    autoDeploy: true

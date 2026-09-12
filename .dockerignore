@@ -1,0 +1,9 @@
+node_modules
+dist
+server/data
+server/tools
+.git
+.atlas
+.claude
+*.log
+.DS_Store

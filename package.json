@@ -1,0 +1,36 @@
+{
+  "name": "akis-media-studio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k \"node --watch server/index.mjs\" \"vite --host 127.0.0.1\"",
+    "build": "vite build",
+    "start": "node server/index.mjs",
+    "setup:tools": "node scripts/setup-tools.mjs",
+    "test": "node --test tests/*.test.mjs && vitest run",
+    "test:backend": "node --test tests/*.test.mjs",
+    "test:frontend": "vitest run"
+  },
+  "dependencies": {
+    "@fontsource/manrope": "^5.3.0",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "ffmpeg-static": "^5.3.0",
+    "helmet": "^8.3.0",
+    "lucide-react": "^0.460.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "yt-dlp-wrap": "^2.3.12",
+    "zod": "^4.6.2"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "concurrently": "^10.0.5",
+    "jsdom": "^29.1.1",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.0"
+  }
+}
