@@ -1,6 +1,6 @@
 import { createApp } from './app.mjs';
 
-const port=Number(process.env.PORT || 3001);
+const port=Number(process.env.PORT || 8080);
 if(!Number.isInteger(port)||port<1||port>65535)throw new Error('PORT 1–65535 aralığında olmalı.');
 const allowedOrigins=(process.env.ALLOWED_ORIGINS||'').split(',').map(value=>value.trim()).filter(Boolean);
 const host=process.env.HOST || (allowedOrigins.length ? '0.0.0.0' : '127.0.0.1');
