@@ -20,7 +20,7 @@ async function directorySize(dir) {
 export async function createApp({engine=createMediaEngine(),dataDir=path.join(root,'server','data'),ttl=60*60*1000,maxJobs=12,maxInspections=3,maxMedia=100,jobTimeout=28*60*1000,allowedOrigins=['http://127.0.0.1:5173','http://localhost:5173'],logger=console}={}) {
   await mkdir(dataDir,{recursive:true});
   for(const entry of await readdir(dataDir,{withFileTypes:true}))if(entry.isDirectory()&&/^job-[0-9a-f-]{36}$/.test(entry.name))await rm(path.join(dataDir,entry.name),{recursive:true,force:true});
-  const app=express();const media=new Map();const jobs=new Map();const queue=[];const inspections=new Set();let active=0,closed=false,cleaning=false;
+  const app=express();app.set('trust proxy',1);const media=new Map();const jobs=new Map();const queue=[];const inspections=new Set();let active=0,closed=false,cleaning=false;
   app.disable('x-powered-by');
   app.use(helmet({contentSecurityPolicy:{directives:{'img-src':["'self'",'https:','data:'],'font-src':["'self'",'data:'],'script-src':["'self'"],'upgrade-insecure-requests':null}},crossOriginResourcePolicy:{policy:'cross-origin'}}));
   app.use((req,res,next)=>{

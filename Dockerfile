@@ -8,6 +8,7 @@ RUN npm run build
 FROM node:22-bookworm-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production PORT=3001 NO_PROXY="" no_proxy=""
+RUN mkdir -p server/tools
 RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip python3-venv ca-certificates ffmpeg \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN python3 -m pip install --break-system-packages --no-cache-dir --upgrade pip \
@@ -19,5 +20,7 @@ COPY scripts ./scripts
 COPY package.json ./
 COPY vite.config.js ./
 COPY index.html ./
+RUN ln -sf /usr/local/bin/yt-dlp /app/server/tools/yt-dlp \
+  && ln -sf /usr/local/bin/gallery-dl /app/server/tools/gallery-dl
 EXPOSE 3001
-CMD ["sh","-c","if [ ! -x server/tools/yt-dlp ]; then yt-dlp --version >/dev/null && ln -sf /usr/local/bin/yt-dlp server/tools/yt-dlp && ln -sf /usr/local/bin/gallery-dl server/tools/gallery-dl; fi; exec node server/index.mjs"]
+CMD ["sh","-c","exec node server/index.mjs"]
