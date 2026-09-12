@@ -102,7 +102,10 @@ function safeSameOriginUrl(value) {
   if (typeof value !== 'string' || !value) return null;
   try {
     const parsed = new URL(value, window.location.origin);
-    return parsed.origin === window.location.origin ? parsed.href : null;
+    if (parsed.origin === window.location.origin) return parsed.href;
+    const apiBase = (API_BASE || '').replace(/\/$/, '');
+    if (apiBase && parsed.origin === apiBase) return parsed.href;
+    return null;
   } catch {
     return null;
   }
