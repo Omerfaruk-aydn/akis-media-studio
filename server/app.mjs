@@ -22,10 +22,10 @@ export async function createApp({engine=createMediaEngine(),dataDir=path.join(ro
   for(const entry of await readdir(dataDir,{withFileTypes:true}))if(entry.isDirectory()&&/^job-[0-9a-f-]{36}$/.test(entry.name))await rm(path.join(dataDir,entry.name),{recursive:true,force:true});
   const app=express();const media=new Map();const jobs=new Map();const queue=[];const inspections=new Set();let active=0,closed=false,cleaning=false;
   app.disable('x-powered-by');
-  app.use(helmet({contentSecurityPolicy:{directives:{'img-src':["'self'",'https:','data:'],'font-src':["'self'",'data:'],'script-src':["'self'"],'upgrade-insecure-requests':null}},crossOriginResourcePolicy:{policy:'same-origin'}}));
+  app.use(helmet({contentSecurityPolicy:{directives:{'img-src':["'self'",'https:','data:'],'font-src':["'self'",'data:'],'script-src':["'self'"],'upgrade-insecure-requests':null}},crossOriginResourcePolicy:{policy:'cross-origin'}}));
   app.use((req,res,next)=>{
     let host;try{host=new URL(`http://${req.headers.host}`).hostname;}catch{}
-    if(!['127.0.0.1','localhost','[::1]'].includes(host) && !host.endsWith('.onrender.com'))return res.status(403).json({code:'HOST_FORBIDDEN',error:'Yalnızca yerel erişim desteklenir.'});
+    if(!['127.0.0.1','localhost','[::1]'].includes(host) && !host.endsWith('.onrender.com') && !host.endsWith('.up.railway.app'))return res.status(403).json({code:'HOST_FORBIDDEN',error:'Yalnızca yerel erişim desteklenir.'});
     if(req.path.startsWith('/api'))res.setHeader('Cache-Control','no-store');
     if(!['GET','HEAD','OPTIONS'].includes(req.method)) {
       const origin=req.headers.origin;
