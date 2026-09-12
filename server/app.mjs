@@ -18,7 +18,7 @@ async function directorySize(dir) {
   for(const entry of await readdir(dir,{withFileTypes:true})) {const file=path.join(dir,entry.name);if(entry.isDirectory())total+=await directorySize(file);else if(entry.isFile())total+=(await stat(file)).size;}
   return total;
 }
-export async function createApp({engine=createMediaEngine(),dataDir=path.join(root,'server','data'),ttl=60*60*1000,maxJobs=12,maxInspections=3,maxMedia=100,jobTimeout=28*60*1000,allowedOrigins=['http://127.0.0.1:5173','http://localhost:5173','https://akis-media-studio.vercel.app'],logger=console}={}) {
+export async function createApp({engine=createMediaEngine(),dataDir=path.join(root,'server','data'),ttl=60*60*1000,maxJobs=12,maxInspections=3,maxMedia=100,jobTimeout=28*60*1000,allowedOrigins=['http://127.0.0.1:5173','http://localhost:5173','https://akis-media-studio.vercel.app','https://akis-media-studio-fhnb7ue0a-omerfarukaydin3455-6335s-projects.vercel.app'],logger=console}={}) {
   await mkdir(dataDir,{recursive:true});
   for(const entry of await readdir(dataDir,{withFileTypes:true}))if(entry.isDirectory()&&/^job-[0-9a-f-]{36}$/.test(entry.name))await rm(path.join(dataDir,entry.name),{recursive:true,force:true});
   const app=express();app.set('trust proxy',1);const media=new Map();const jobs=new Map();const queue=[];const inspections=new Set();let active=0,closed=false,cleaning=false;
@@ -41,7 +41,7 @@ export async function createApp({engine=createMediaEngine(),dataDir=path.join(ro
     if(req.path.startsWith('/api'))res.setHeader('Cache-Control','no-store');
     if(!['GET','HEAD','OPTIONS'].includes(req.method)) {
       const origin=req.headers.origin;
-      if(req.headers['sec-fetch-site']==='cross-site'||(origin && origin!==`http://${req.headers.host}` && !allowedOrigins.includes(origin)))return res.status(403).json({code:'ORIGIN_FORBIDDEN',error:'Bu kaynaktan istek kabul edilmiyor.'});
+      if(origin && !allowedOrigins.includes(origin) && origin!==`http://${req.headers.host}`)return res.status(403).json({code:'ORIGIN_FORBIDDEN',error:'Bu kaynaktan istek kabul edilmiyor.'});
       if(!req.is('application/json'))return res.status(415).json({code:'JSON_REQUIRED',error:'JSON gövdesi gerekli.'});
     }
     next();
