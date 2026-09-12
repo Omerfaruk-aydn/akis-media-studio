@@ -9,8 +9,8 @@ FROM node:22-bookworm-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production PORT=3001 NO_PROXY="" no_proxy=""
 RUN apt-get update && apt-get install -y --no-install-recommends python3 ca-certificates ffmpeg \
-  && python3 -m pip install --break-system-packages --no-cache-dir yt-dlp gallery-dl \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN python3 -m pip install --break-system-packages --no-cache-dir yt-dlp gallery-dl
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY server ./server
