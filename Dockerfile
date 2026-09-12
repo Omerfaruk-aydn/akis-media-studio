@@ -8,10 +8,8 @@ RUN npm run build
 FROM node:22-bookworm-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production PORT=3001 NO_PROXY="" no_proxy=""
-RUN apt-get update && apt-get install -y --no-install-recommends python3 ca-certificates curl ffmpeg \
-  && curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp \
-  && curl -fsSL https://github.com/mikf/gallery-dl/releases/download/v1.32.11/gallery-dl.bin -o /usr/local/bin/gallery-dl \
-  && chmod +x /usr/local/bin/yt-dlp /usr/local/bin/gallery-dl \
+RUN apt-get update && apt-get install -y --no-install-recommends python3 ca-certificates ffmpeg \
+  && python3 -m pip install --break-system-packages --no-cache-dir yt-dlp gallery-dl \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
