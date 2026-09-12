@@ -32,7 +32,7 @@ import {
 
 const HISTORY_KEY = 'akis.history.v1';
 const HISTORY_LIMIT = 30;
-const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, ''); // backend base URL injected at build time
 
 const PLATFORMS = [
   { id: 'youtube', name: 'YouTube', icon: Youtube, host: ['youtube.com', 'youtu.be'], hint: 'youtube.com/watch?v=…', color: '#ff0033' },
