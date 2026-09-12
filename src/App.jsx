@@ -32,6 +32,7 @@ import {
 
 const HISTORY_KEY = 'akis.history.v1';
 const HISTORY_LIMIT = 30;
+const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
 const PLATFORMS = [
   { id: 'youtube', name: 'YouTube', icon: Youtube, host: ['youtube.com', 'youtu.be'], hint: 'youtube.com/watch?v=…', color: '#ff0033' },
@@ -120,7 +121,7 @@ function safeImageUrl(value) {
 async function request(path, body, signal) {
   let response;
   try {
-    response = await fetch(path, {
+    response = await fetch(`${API_BASE}${path}`, {
       method: body ? 'POST' : 'GET',
       headers: body ? { 'Content-Type': 'application/json' } : undefined,
       body: body ? JSON.stringify(body) : undefined,

@@ -9,4 +9,8 @@ services:
         value: production
       - key: PORT
         value: 3001
+      - key: HOST
+        value: 0.0.0.0
+      - key: ALLOWED_ORIGINS
+        value: https://akis-media-studio.vercel.app
     autoDeploy: true
