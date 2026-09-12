@@ -113,10 +113,13 @@ function safeSameOriginUrl(value) {
 
 function safeDownloadUrl(value) {
   if (typeof value !== 'string' || !value) return null;
+  let candidate = value;
+  if (candidate.startsWith('/') && API_BASE) {
+    candidate = `${API_BASE}${candidate}`;
+  }
   try {
-    const parsed = new URL(value, window.location.origin);
+    const parsed = new URL(candidate, window.location.origin);
     if (!['http:', 'https:'].includes(parsed.protocol)) return null;
-    if (parsed.protocol === 'https:' && parsed.hostname === 'localhost') return null;
     return parsed.href;
   } catch {
     return null;
