@@ -1,5 +1,6 @@
 import express from 'express';
 import helmet from 'helmet';
+import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
 import { randomUUID } from 'node:crypto';
@@ -17,11 +18,22 @@ async function directorySize(dir) {
   for(const entry of await readdir(dir,{withFileTypes:true})) {const file=path.join(dir,entry.name);if(entry.isDirectory())total+=await directorySize(file);else if(entry.isFile())total+=(await stat(file)).size;}
   return total;
 }
-export async function createApp({engine=createMediaEngine(),dataDir=path.join(root,'server','data'),ttl=60*60*1000,maxJobs=12,maxInspections=3,maxMedia=100,jobTimeout=28*60*1000,allowedOrigins=['http://127.0.0.1:5173','http://localhost:5173'],logger=console}={}) {
+export async function createApp({engine=createMediaEngine(),dataDir=path.join(root,'server','data'),ttl=60*60*1000,maxJobs=12,maxInspections=3,maxMedia=100,jobTimeout=28*60*1000,allowedOrigins=['http://127.0.0.1:5173','http://localhost:5173','https://akis-media-studio.vercel.app'],logger=console}={}) {
   await mkdir(dataDir,{recursive:true});
   for(const entry of await readdir(dataDir,{withFileTypes:true}))if(entry.isDirectory()&&/^job-[0-9a-f-]{36}$/.test(entry.name))await rm(path.join(dataDir,entry.name),{recursive:true,force:true});
   const app=express();app.set('trust proxy',1);const media=new Map();const jobs=new Map();const queue=[];const inspections=new Set();let active=0,closed=false,cleaning=false;
   app.disable('x-powered-by');
+  app.use(cors({
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      if (allowedOrigins.includes(origin)) return cb(null, true);
+      return cb(new Error('Origin not allowed'));
+    },
+    credentials: false,
+    methods: ['GET','POST','OPTIONS'],
+    allowedHeaders: ['Content-Type'],
+    maxAge: 86400,
+  }));
   app.use(helmet({contentSecurityPolicy:{directives:{'img-src':["'self'",'https:','data:'],'font-src':["'self'",'data:'],'script-src':["'self'"],'upgrade-insecure-requests':null}},crossOriginResourcePolicy:{policy:'cross-origin'}}));
   app.use((req,res,next)=>{
     let host;try{host=new URL(`http://${req.headers.host}`).hostname;}catch{}
